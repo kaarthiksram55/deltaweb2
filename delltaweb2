@@ -1,0 +1,308 @@
+
+<!DOCTYPE html>
+<html>
+<body onload="loadCanvas(event)" onclick="startGame()" onmousemove="followMouse()">
+	<script type="application/javascript">
+		var c,ctx;
+		var wwidth = 700, wheight = 350, walldistance =280;
+
+		var dbx = 350, dby = 275, dbsize = 10;
+
+	    var w1ty,w2ty,w3ty,w4ty,w5ty;
+	    var w1by,w2by,w3by,w4by,w5by;
+	    var w1th,w2th,w3th,w4th,w5th;
+	    var w1bh,w2bh,w3bh,w4bh,w5bh;
+	    var w1x,w2x,w3x,w4x,w5x;
+	    var w1w,w2w,w3w,w4w,w5w;
+
+	    var starttimer,startflag = 0;
+
+	    var dbspeed = 10,levelspeed = 6;
+		var temp, moveflag = 0;
+	    var score = -2,scoretimer;
+	    var levelcount = 0;
+
+	    var sign = [-1,1];
+	    var index=1,direction,gap;
+
+		function loadCanvas(event){
+			w1x = 600;
+			w2x = w1x+walldistance;
+			w3x = w2x+walldistance;
+			w4x = w3x+walldistance;
+			w5x = w4x+walldistance;
+			w1ty = 0;
+			w2ty = 0;
+			w3ty = 0;
+			w4ty = 0;
+			w5ty = 0;
+			w1w = 35;
+			w2w = 35;
+			w3w = 35;
+			w4w = 35;
+			w5w = 35;
+			generateCoordinates(0);
+			c = document.getElementById("c");
+			if(c.getContext){
+				ctx = c.getContext("2d");
+				ctx.canvas.width = wwidth+1;
+				ctx.canvas.height = wheight+1;
+				drawBackground();
+				drawObstacle();
+				drawDB();
+				scoreUpdate();
+			}
+		}
+
+		function drawBackground(){
+			ctx.beginPath();
+			ctx.moveTo(0,0);
+			ctx.lineTo(wwidth+1,0);
+			ctx.lineTo(wwidth+1,wheight+1);
+			ctx.lineTo(0,wheight+1);
+			ctx.lineTo(0,0);
+			ctx.stroke();
+			ctx.closePath();
+		}	
+
+		function generateCoordinates(p){
+			if(p==0){
+				w1th = Math.random()*240;
+				w1by = w1th+Math.random()*20+40;
+				w1bh = wheight - w1by;
+				generateCoordinates(2);
+				generateCoordinates(3);
+				generateCoordinates(4);
+				generateCoordinates(5);
+			}
+			if(p==1){
+				if(w5th<50)
+					direction = 1;
+				else if(w5by>280)
+					direction = -1;
+				else{
+					index = (Math.random()*2>1)?1:0;
+					direction = sign[index];
+				}
+				w1th = w5th+direction*Math.random()*100;
+				w1by = w1th+Math.random()*20+40;
+				w1bh = wheight - w1by;
+			}
+			if(p==2){
+				if(w1th<50)
+					direction = 1;
+				else if(w1by>280)
+					direction = -1;
+				else{
+					index = (Math.random()*2>1)?1:0;
+					direction = sign[index];
+				}
+				w2th = w1th+direction*Math.random()*100;
+				w2by = w2th+Math.random()*20+40;
+				w2bh = wheight - w2by;				
+			}
+			if(p==3){
+				if(w2th<50)
+					direction = 1;
+				else if(w2by>280)
+					direction = -1;
+				else{
+					index = (Math.random()*2>1)?1:0;
+					direction = sign[index];
+				}
+				w3th = w2th+direction*Math.random()*100;
+				w3by = w3th+Math.random()*20+40;
+				w3bh = wheight - w3by;				
+			}
+			if(p==4){
+				if(w3th<50)
+					direction = 1;
+				else if(w3by>280)
+					direction = -1;
+				else{
+					index = (Math.random()*2>1)?1:0;
+					direction = sign[index];
+				}
+				w4th = w3th+direction*Math.random()*100;
+				w4by = w4th+Math.random()*20+40;
+				w4bh = wheight - w4by;				
+			}
+			if(p==5){
+				if(w4th<50)
+					direction = 1;
+				else if(w4by>280)
+					direction = -1;
+				else{
+					index = (Math.random()*2>1)?1:0;
+					direction = sign[index];
+				}
+				w5th = w4th+direction*Math.random()*100;
+				w5by = w5th+Math.random()*20+40;
+				w5bh = wheight - w5by;
+			}
+		}
+
+		function drawDB(){
+			ctx.beginPath();
+			ctx.fillStyle = 'rgb(255,0,0)';
+			ctx.clearRect(dbx-dbsize-1,dby-dbsize-1,2*dbsize+2,2*dbsize+3);
+			ctx.arc(dbx,dby,dbsize,0,Math.PI*2,true);
+			ctx.fill();
+		}	
+
+		function followMouse(){
+			temp = event.clientY;
+			if(moveflag==0)
+				move = setInterval(function(){
+					if(dby>temp)
+				 		dby--;
+					else if(dby<temp)
+				 		dby++;
+					drawDB();
+				},dbspeed);
+			moveflag=1;
+		}
+
+		function drawObstacle(){
+			ctx.fillStyle = 'rgb(0,0,0)';
+			ctx.beginPath();
+			ctx.fillRect(w1x+1,w1ty,w1w,w1th);
+			ctx.fillRect(w1x+1,w1by,w1w,w1bh);
+			ctx.fillRect(w2x+1,w2ty,w2w,w2th);
+			ctx.fillRect(w2x+1,w2by,w2w,w2bh);
+			ctx.fillRect(w3x+1,w3ty,w3w,w3th);
+			ctx.fillRect(w3x+1,w3by,w3w,w3bh);
+			ctx.fillRect(w4x+1,w4ty,w4w,w4th);
+			ctx.fillRect(w4x+1,w4by,w4w,w4bh);
+			ctx.fillRect(w5x+1,w5ty,w5w,w5th);
+			ctx.fillRect(w5x+1,w5by,w5w,w5bh);
+			ctx.fill();
+		}
+
+		function startGame(){
+			dbxflag=0;
+			if(startflag==0){
+				starttimer = setInterval(function(){
+					ctx.clearRect(w1x+1,w1ty,w1w+1,w1th+1);
+					ctx.clearRect(w1x+1,w1by-1,w1w+1,w1bh+1);
+					ctx.clearRect(w2x+1,w2ty,w2w+1,w2th+1);
+					ctx.clearRect(w2x+1,w2by-1,w2w+1,w2bh+1);
+					ctx.clearRect(w3x+1,w3ty,w3w+1,w3th+1);
+					ctx.clearRect(w3x+1,w3by-1,w3w+1,w3bh+1);
+					ctx.clearRect(w4x+1,w4ty,w4w+1,w4th+1);
+					ctx.clearRect(w4x+1,w4by-1,w4w+1,w4bh+1);
+					ctx.clearRect(w5x+1,w5ty,w5w+1,w5th+1);
+					ctx.clearRect(w5x+1,w5by-1,w5w+1,w5bh+1);
+					collision();
+					w1x--;
+					w2x--;
+					w3x--;
+					w4x--;
+					w5x--;
+					if(w1x+w1w<=0){
+						w1x = w5x+walldistance;
+						generateCoordinates(1);
+					}
+					if(w2x+w2w<=0){
+						w2x = w1x+walldistance;
+						generateCoordinates(2);
+					}
+					if(w3x+w3w<=0){
+						w3x = w2x+walldistance;
+						generateCoordinates(3);
+					}
+					if(w4x+w4w<=0){
+						w4x = w3x+walldistance;
+						generateCoordinates(4);
+					}
+					if(w5x+w5w<=0){
+						w5x = w4x+walldistance;
+						generateCoordinates(5);
+					}
+					drawObstacle();
+				},levelspeed);
+				scoretimer = setInterval(scoreUpdate,400);
+			}
+			startflag = 1;
+		}
+
+		function collision(){
+			if(dbx-dbsize<=0||dby-dbsize<=0||dby+dbsize>=wheight){
+				clearInterval(scoretimer);
+				clearInterval(starttimer);
+				clearInterval(move);
+			}
+			if(dbx+dbsize>=w1x&&dbx-dbsize<=w1x+w1w){
+				if(dby-dbsize<=w1th||dby+dbsize>=w1by){
+					dbx--;
+				}
+				else{
+					clearInterval(move);
+					moveflag=0;
+				}
+				ctx.clearRect(0,0,wwidth,wheight);
+				drawObstacle();
+				drawDB();
+			}
+			if(dbx+dbsize>=w2x&&dbx-dbsize<=w2x+w2w){
+				if(dby-dbsize<=w2th||dby+dbsize>=w2by){
+					dbx--;
+				}
+				else{
+					clearInterval(move);
+					moveflag=0;
+				}
+				ctx.clearRect(0,0,wwidth,wheight);
+				drawObstacle();
+				drawDB();
+			}
+			if(dbx+dbsize>=w3x&&dbx-dbsize<=w3x+w3w){
+				if(dby-dbsize<=w3th||dby+dbsize>=w3by){
+					dbx--;
+				}
+				else{
+					clearInterval(move);
+					moveflag=0;
+				}
+				ctx.clearRect(0,0,wwidth,wheight);
+				drawObstacle();
+				drawDB();
+			}
+			if(dbx+dbsize>=w4x&&dbx-dbsize<=w4x+w4w){
+				if(dby-dbsize<=w4th||dby+dbsize>=w4by){
+					dbx--;
+				}
+				else{
+					clearInterval(move);
+					moveflag=0;
+				}
+				ctx.clearRect(0,0,wwidth,wheight);
+				drawObstacle();
+				drawDB();
+			}
+			if(dbx+dbsize>=w5x&&dbx-dbsize<=w5x+w5w){
+				if(dby-dbsize<=w5th||dby+dbsize>=w5by){
+					dbx--;
+				}
+				else{
+					clearInterval(move);
+					moveflag=0;
+				}
+				ctx.clearRect(0,0,wwidth,wheight);
+				drawObstacle();
+				drawDB();
+			}
+		}
+
+		function scoreUpdate(){
+			if(score<0)
+				document.getElementById('score').innerHTML = "score: "+0;
+			else
+				document.getElementById('score').innerHTML = "score: "+score;
+			score++;
+		}
+	</script>
+	<canvas id = 'c' ></canvas>
+	<p id = 'score'>
+</body>
+</html>
